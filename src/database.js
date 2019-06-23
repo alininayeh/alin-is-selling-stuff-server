@@ -1,19 +1,60 @@
-const MongoClient = require('mongodb').MongoClient;
+const {MongoClient, ObjectID} = require('mongodb');
+const dbPath = 'mongodb://localhost:27017';
 const dbName = 'alin-is-selling-stuff';
-const url = 'mongodb://localhost:27017/' + dbName;
 
-const connectToDatabase = () => (
-    new Promise((resolve, reject) => {
-        MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
-            if (err) reject(err);
-            resolve({
-                db,
-                dbName
+const Database = {
+    connect() {
+        return new Promise((resolve, reject) => {
+            MongoClient.connect(dbPath, {useNewUrlParser: true}, (err, client) => {
+                if (err) reject(err);
+                this.client = client;
+                this.db = client.db(dbName);
+                resolve();
             });
         });
-    })
-);
+    },
 
-module.exports = {
-    connectToDatabase
+    createCollection(collectionName) {
+        return new Promise((resolve, reject) => {
+            this.db.createCollection(collectionName, (err, res) => {
+                if (err) reject(err);
+                resolve(res);
+            });
+        });
+    },
+
+    getProducts(filter = {}) {
+        return new Promise((resolve, reject) => {
+            this.db.collection('products').find(filter).toArray((err, res) => {
+                if (err) reject(err);
+                resolve(res);
+            });
+        });
+    },
+
+    addProducts(products) {
+        return new Promise((resolve, reject) => {
+            this.db.collection('products').insertMany(products, (err, res) => {
+                if (err) reject(err);
+                resolve(res);
+            });
+        });
+    },
+
+    deleteProduct(productId) {
+        return new Promise((resolve, reject) => {
+            this.db.collection('products').deleteOne({
+                _id: new ObjectID(productId)
+            }, (err, res) => {
+                if (err) reject(err);
+                resolve(res);
+            });
+        });
+    },
+
+    disconnect() {
+        this.client.close();
+    }
 };
+
+module.exports = Database;
