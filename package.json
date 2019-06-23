@@ -1,0 +1,24 @@
+{
+  "name": "alin-is-selling-stuff-server",
+  "version": "1.0.0",
+  "description": "### How to start locally ###",
+  "main": "src/index.js",
+  "scripts": {
+    "initDatabase": "node startup.js",
+    "start": "node src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alininayeh/is-selling-stuff-server.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alininayeh/is-selling-stuff-server/issues"
+  },
+  "homepage": "https://github.com/alininayeh/is-selling-stuff-server#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongodb": "^3.2.7"
+  }
+}
