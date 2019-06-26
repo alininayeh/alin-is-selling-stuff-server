@@ -1,7 +1,7 @@
 const Database = require('./src/database');
 
 async function initDatabase() {
-    console.log('Creating a new database if not present');
+    console.log('Creating a new database if not present - v1');
     await Database.connect();
 
     console.log('Creating the products collection');
