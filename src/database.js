@@ -4,8 +4,6 @@ const dbName = process.env.MONGODB_NAME || 'alin-is-selling-stuff';
 
 const Database = {
     connect() {
-        console.log('database', dbPath, dbName);
-        
         return new Promise((resolve, reject) => {
             MongoClient.connect(dbPath, {useNewUrlParser: true}, (err, client) => {
                 if (err) reject(err);
