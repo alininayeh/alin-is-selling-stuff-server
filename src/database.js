@@ -1,5 +1,5 @@
 const {MongoClient, ObjectID} = require('mongodb');
-const dbPath = process.env.MONGODB_URI || 'mongodb://localhost:27017';
+const dbPath = process.env.MONGODB || 'mongodb://localhost:27017';
 const dbName = 'alin-is-selling-stuff';
 
 const Database = {
