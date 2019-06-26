@@ -2,10 +2,10 @@ const {MongoClient, ObjectID} = require('mongodb');
 const dbPath = process.env.MONGODB_URI || 'mongodb://localhost:27017';
 const dbName = process.env.MONGODB_NAME || 'alin-is-selling-stuff';
 
-console.log('database', dbPath, dbName);
-
 const Database = {
     connect() {
+        console.log('database', dbPath, dbName);
+        
         return new Promise((resolve, reject) => {
             MongoClient.connect(dbPath, {useNewUrlParser: true}, (err, client) => {
                 if (err) reject(err);
