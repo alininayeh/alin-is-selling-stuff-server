@@ -1,3 +1,5 @@
+const PORT = process.env.PORT || 5000;
+
 const express = require('express');
 const app = express();
 const jwt = require('jsonwebtoken');
@@ -166,7 +168,7 @@ class App {
     start() {
         this._addCORSHeader();
         this._router();
-        app.listen(3001);
+        app.listen(PORT);
     }
 }
 
