@@ -1,7 +1,6 @@
 const Database = require('./src/database');
 
 async function initDatabase() {
-    console.log('Creating a new database if not present', process.env.MONGODB_URI, process.env.MONGODB_NAME);
     await Database.connect();
 
     console.log('Creating the products collection');
