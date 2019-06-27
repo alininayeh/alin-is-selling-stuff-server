@@ -1,16 +1,15 @@
-const {PORT} = require('./config');
+const {PORT, AUTH_SECRET_KEY, ADMIN_USER, ADMIN_PASS} = require('./config');
 const express = require('express');
 const app = express();
 const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
-const formidable = require('formidable');
-const fs = require('fs');
 const Api = require('./api');
-const path = require('path');
+const upload = require('./upload');
+const singleUpload = upload.single('image');
 
 class App {
     constructor() {
-        this._secretKey = 'alinissellingstuff1515165177421';
+        this._secretKey = AUTH_SECRET_KEY;
         app.use(bodyParser.json());
         app.use(bodyParser.urlencoded({ extended: true }));
     }
@@ -37,24 +36,6 @@ class App {
         });
     }
 
-    _uploadFile(file) {
-        return new Promise((resolve, reject) => {
-            const uploadsFolder = path.join(__dirname, '../uploads');
-            const fileType = file.type.split('/').pop();
-
-            if (fileType === 'jpg' || fileType === 'png' || fileType === 'jpeg') {
-                let uploadedFileName = `${new Date().getTime()}.${fileType}`;
-    
-                fs.rename(file.path, `${uploadsFolder}/${uploadedFileName}`, (err) => {
-                    if (err) reject(err);
-                    resolve(uploadedFileName);
-                });
-            } else {
-                reject();
-            }
-        });
-    }
-
     _router() {
         // authentication
         app.post('/api/login', this.login.bind(this));
@@ -73,7 +54,7 @@ class App {
         const user = req.body.user;
         const pass = req.body.pass;
 
-        if (user !== 'admin' || pass !== '`~5X(jbwTYreU}xP$$w0') {
+        if (user !== ADMIN_USER || pass !== ADMIN_PASS) {
             res.json({ error: 'Wrong credentials!' });
         } else {
             jwt.sign({}, this._secretKey, { expiresIn: '24h' }, (err, token) => {
@@ -88,26 +69,12 @@ class App {
         const token = await this._verifyToken(req, res);
         if (!token) return;
 
-        const form = new formidable.IncomingForm();
-
-        form.parse(req, async (err, fields, files) => {
+        singleUpload(req, res, (err) => {
             if (err) {
-                res.json({error: 'Could not process data!'});
-                return;
+                return res.json({error: 'Could not upload image!'});
             }
 
-            const {image} = files;
-
-            if (image && image.name) {
-                try {
-                    const filename = await this._uploadFile(image);
-                    res.json({url: filename});
-                } catch(e) {
-                    console.log(e);
-                    res.json({error: 'Could not upload image!'});
-                    return;
-                }
-            }
+            res.json({imageUrl: req.file.location});
         });
     }
 
@@ -118,7 +85,6 @@ class App {
             res.json({products});
         } catch(e) {
             res.json({error: 'Could not get products!'});
-            return;
         }
     }
 
@@ -129,8 +95,7 @@ class App {
         const {name, description, price} = req.body;
 
         if (!name || !description || !price) {
-            res.json({error: 'Not enough data!'});
-            return;
+            return res.json({error: 'Not enough data!'});
         }
 
         const product = {
@@ -156,8 +121,7 @@ class App {
         const {id} = req.body;
 
         if (!id) {
-            res.json({error: 'Not enough data!'});
-            return;
+            return res.json({error: 'Not enough data!'});
         }
 
         await Api.deleteProduct(id);
