@@ -1,14 +1,16 @@
+const dotenv = require('dotenv');
+dotenv.config();
+const MONGODB_URI = process.env.MONGODB_URI;
+const MONGODB_NAME = process.env.MONGODB_NAME;
 const {MongoClient, ObjectID} = require('mongodb');
-const dbPath = process.env.MONGODB_URI || 'mongodb://localhost:27017';
-const dbName = process.env.MONGODB_NAME || 'alin-is-selling-stuff';
 
 const Database = {
     connect() {
         return new Promise((resolve, reject) => {
-            MongoClient.connect(dbPath, {useNewUrlParser: true}, (err, client) => {
+            MongoClient.connect(MONGODB_URI, {useNewUrlParser: true}, (err, client) => {
                 if (err) reject(err);
                 this.client = client;
-                this.db = client.db(dbName);
+                this.db = client.db(MONGODB_NAME);
                 resolve();
             });
         });
