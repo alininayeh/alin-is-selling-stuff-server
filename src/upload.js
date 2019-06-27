@@ -2,6 +2,7 @@ const {S3_ACCESS_KEY, S3_SECRET_KEY, S3_BUCKET_NAME, S3_BUCKET_REGION} = require
 const multer = require('multer');
 const multerS3 = require('multer-s3');
 const aws = require('aws-sdk');
+const path = require('path');
 
 aws.config.update({
     accessKeyId: S3_ACCESS_KEY,
@@ -12,6 +13,14 @@ aws.config.update({
 const s3 = new aws.S3();
 
 const upload = multer({
+    fileFilter: function (req, file, cb) {
+        if(['.jpg', '.jpeg', '.png'].indexOf(path.extname(file.originalname).toLowerCase()) === -1) {
+            cb(new Error('Only images allowed'));
+        } else {
+            cb(null, true);
+        }
+        
+    },
     storage: multerS3({
         s3,
         bucket: S3_BUCKET_NAME,
