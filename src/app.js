@@ -36,12 +36,21 @@ class App {
         });
     }
 
+    _uploadImage(req, res) {
+        return new Promise((resolve, reject) => {
+            singleUpload(req, res, (err) => {
+                if (err) {
+                    reject();
+                }
+
+                resolve(req.file.location);
+            });
+        });
+    }
+
     _router() {
         // authentication
         app.post('/api/login', this.login.bind(this));
-
-        // file upload
-        app.post('/api/upload', this.uploadImage.bind(this));
 
         // products
         app.get('/api/products', this.getProducts.bind(this));
@@ -65,18 +74,7 @@ class App {
     }
 
     // File upload
-    async uploadImage(req, res) {
-        const token = await this._verifyToken(req, res);
-        if (!token) return;
-
-        singleUpload(req, res, (err) => {
-            if (err) {
-                return res.json({error: 'Could not upload image!'});
-            }
-
-            res.json({imageUrl: req.file.location});
-        });
-    }
+    
 
     // Products
     async getProducts(req, res) {
@@ -103,8 +101,12 @@ class App {
             description,
             price,
             sold: false,
-            photos: []
         };
+
+        if (req.body.image) {
+            const imageUrl = await uploadImage(req, res);
+            product.image = imageUrl;
+        }
         
         try {
             await Api.addProduct(product);
