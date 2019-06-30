@@ -69,13 +69,17 @@ class App {
         const token = await this._verifyToken(req, res);
         if (!token) return;
 
-        singleUpload(req, res, (err) => {
-            if (err) {
-                return res.json({error: 'Could not upload image!'});
-            }
+        try {
+            singleUpload(req, res, (err) => {
+                if (err) {
+                    return res.json({error: 'Could not upload image!'});
+                }
 
-            res.json({imageUrl: req.file.location});
-        });
+                res.json({imageUrl: req.file.location});
+            });
+        } catch(e) {
+            res.json({error: 'Could not upload image!'});
+        }
     }
 
     // Products
