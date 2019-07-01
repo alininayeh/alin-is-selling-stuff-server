@@ -123,7 +123,7 @@ class App {
         const token = await this._verifyToken(req, res);
         if (!token) return;
 
-        const {name, description, price, image, id} = req.body;
+        const {name, description, price, image, _id} = req.body;
 
         if (!name || !description || !price) {
             return res.json({error: 'Not enough data!'});
@@ -137,7 +137,7 @@ class App {
         };
         
         try {
-            await Api.editProduct(id, product);
+            await Api.editProduct(_id, product);
             res.json({product});
         } catch(e) {
             res.json({error: 'Could not edit product!'});
