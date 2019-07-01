@@ -19,6 +19,15 @@ const Api = {
         });
     },
 
+    editProduct(productId, product) {
+        return new Promise(async (resolve, reject) => {
+            await Database.connect();
+            await Database.editProduct(productId, product).catch(() => reject());
+            resolve();
+            Database.disconnect();
+        });
+    },
+
     deleteProduct(productId) {
         return new Promise(async (resolve, reject) => {
             await Database.connect();
