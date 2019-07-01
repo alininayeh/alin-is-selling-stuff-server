@@ -40,6 +40,22 @@ const Database = {
         });
     },
 
+    editProduct(productId, product) {
+        return new Promise((resolve, reject) => {
+            this.db.collection('products').updateOne(
+                {
+                    _id: new ObjectID(productId)
+                },
+                {
+                    $set: product
+                }, (err, res) => {
+                    if (err) reject(err);
+                    resolve(res);
+                });
+            }
+        );
+    },
+
     deleteProduct(productId) {
         return new Promise((resolve, reject) => {
             this.db.collection('products').deleteOne({

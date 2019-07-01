@@ -46,6 +46,7 @@ class App {
         // products
         app.get('/api/products', this.getProducts.bind(this));
         app.post('/api/products', this.addProduct.bind(this));
+        app.put('/api/products', this.editProduct.bind(this));
         app.delete('/api/products', this.deleteProduct.bind(this));
     }
 
@@ -115,6 +116,31 @@ class App {
             res.json({product});
         } catch(e) {
             res.json({error: 'Could not add product!'});
+        }
+    }
+
+    async editProduct(req, res) {
+        const token = await this._verifyToken(req, res);
+        if (!token) return;
+
+        const {name, description, price, image, id} = req.body;
+
+        if (!name || !description || !price) {
+            return res.json({error: 'Not enough data!'});
+        }
+
+        const product = {
+            name,
+            description,
+            price,
+            image
+        };
+        
+        try {
+            await Api.editProduct(id, product);
+            res.json({product});
+        } catch(e) {
+            res.json({error: 'Could not edit product!'});
         }
     }
 
